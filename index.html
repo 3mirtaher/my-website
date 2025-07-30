@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Links - Dynamic Snowfall Background</title>
+    <style>
+        /* Apply border-box to all elements for consistent sizing */
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%; /* Ensure html and body take full viewport height */
+            margin: 0;
+            overflow: hidden; /* Hide scrollbars if video or content exceeds viewport */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #000a12; /* Fallback dark background for night (for mobile/no video) */
+            color: #e0e0e0;
+            position: relative; /* Needed for z-index */
+        }
+
+        /* --- Video Background for Desktops/Tablets --- */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* This is BEHIND all content */
+            opacity: 0; /* Start hidden for smooth fade-in */
+            transition: opacity 1s ease-in-out;
+            display: none; /* Hidden by default (for mobile performance) */
+        }
+
+        @media (min-width: 768px) {
+            .video-background {
+                display: block; /* Show video on larger screens */
+            }
+        }
+
+        .video-background iframe {
+            width: 100vw;
+            height: 56.25vw;
+            min-height: 100vh;
+            min-width: 177.77vh;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none; /* Allows clicking through video */
+        }
+
+        /* Optional: Dark overlay above video for readability */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Dark translucent overlay */
+            z-index: -1; /* Between video and content */
+            pointer-events: none;
+            display: none; /* Hidden by default (for mobile performance) */
+        }
+        @media (min-width: 768px) {
+            .video-overlay {
+                display: block; /* Show overlay on larger screens with video */
+            }
+        }
+
+        /* --- CSS Snowfall Background for Mobile (and as fallback) --- */
+        /* Front layer of snow (larger, faster, more varied drift, more opaque) */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2; /* Even further behind, if video is active, otherwise becomes background */
+            background-image:
+                radial-gradient(circle, white 1.8px, transparent 1.8px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.9) 2.2px, transparent 2.2px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.7) 1.5px, transparent 1.5px),
+                radial-gradient(circle, white 2.5px, transparent 2.5px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.8) 1.2px, transparent 1.2px),
+                radial-gradient(circle, white 2px, transparent 2px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.95) 2.8px, transparent 2.8px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.75) 1.9px, transparent 1.9px),
+                radial-gradient(circle, white 1.6px, transparent 1.6px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.85) 2.1px, transparent 2.1px),
+                radial-gradient(circle, white 1.3px, transparent 1.3px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.92) 2.4px, transparent 2.4px);
+            background-size:
+                60px 60px, 75px 75px, 80px 80px, 90px 90px, 65px 65px, 70px 70px, 95px 95px, 85px 85px, 55px 55px, 72px 72px, 68px 68px, 88px 88px;
+            background-position:
+                0% 0%, 15% 0%, 30% 0%, 45% 0%, 60% 0%, 75% 0%, 90% 0%, 5% 0%, 25% 0%, 40% 0%, 55% 0%, 70% 0%;
+            animation: snowfall-front 50s linear infinite;
+        }
+
+        /* Back layer of snow (smaller, slower, subtle drift, more transparent) */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -3; /* Farthest back */
+            background-image:
+                radial-gradient(circle, rgba(255, 255, 255, 0.6) 0.5px, transparent 0.5px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.5) 0.8px, transparent 0.8px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.7) 0.6px, transparent 0.6px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.65) 0.7px, transparent 0.7px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.55) 0.9px, transparent 0.9px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.72) 0.65px, transparent 0.65px),
+                radial-gradient(circle, rgba(255, 255, 255, 0.48) 0.88px, transparent 0.88px);
+            background-size:
+                100px 100px, 120px 120px, 110px 110px, 130px 130px, 95px 95px, 115px 115px, 105px 105px, 125px 125px;
+            background-position:
+                10% 0%, 30% 0%, 50% 0%, 70% 0%, 90% 0%, 20% 0%, 40% 0%, 60% 0%;
+            animation: snowfall-back 80s linear infinite;
+        }
+
+        /* Keyframes for the front snow layer (more natural, random-like horizontal drift) */
+        @keyframes snowfall-front {
+            0% { background-position: 0% 0%, 15% 0%, 30% 0%, 45% 0%, 60% 0%, 75% 0%, 90% 0%, 5% 0%, 25% 0%, 40% 0%, 55% 0%, 70% 0%; }
+            25% { background-position: 3% 25%, 12% 25%, 33% 25%, 42% 25%, 63% 25%, 72% 25%, 87% 25%, 8% 25%, 22% 25%, 43% 25%, 52% 25%, 73% 25%; }
+            50% { background-position: -2% 50%, 18% 50%, 27% 50%, 48% 50%, 57% 50%, 78% 50%, 85% 50%, 2% 50%, 28% 50%, 37% 50%, 58% 50%, 67% 50%; }
+            75% { background-position: 1% 75%, 14% 75%, 31% 75%, 44% 75%, 61% 75%, 74% 75%, 91% 75%, 7% 75%, 24% 75%, 41% 75%, 56% 75%, 71% 75%; }
+            100% { background-position: 0% 100%, 15% 100%, 30% 100%, 45% 100%, 60% 100%, 75% 100%, 90% 100%, 5% 100%, 25% 100%, 40% 100%, 55% 100%, 70% 100%; }
+        }
+
+        /* Keyframes for the back snow layer (very subtle, gentle horizontal drift) */
+        @keyframes snowfall-back {
+            0% { background-position: 10% 0%, 30% 0%, 50% 0%, 70% 0%, 90% 0%, 20% 0%, 40% 0%, 60% 0%; }
+            50% { background-position: 12% 50%, 28% 50%, 52% 50%, 68% 50%, 92% 50%, 18% 50%, 42% 50%, 58% 50%; }
+            100% { background-position: 10% 100%, 30% 100%, 50% 100%, 70% 100%, 90% 100%, 20% 100%, 40% 100%, 60% 100%; }
+        }
+
+        /* --- Links Container and Content (Always on top) --- */
+        .container {
+            background-color: rgba(255, 255, 255, 0.05); /* Softer transparency */
+            backdrop-filter: blur(10px); /* Slightly more prominent blur for depth */
+            padding: 40px; /* Increased padding for more comfortable spacing */
+            border-radius: 25px; /* Even more rounded corners */
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7); /* Deeper, softer shadow */
+            text-align: center;
+            width: 90%;
+            max-width: 500px; /* Slightly wider */
+            z-index: 10; /* Ensure it's ABOVE all background elements */
+            position: relative; /* Needed for z-index to work */
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle, elegant border */
+            transition: transform 0.4s ease-in-out, box-shadow 0.4s ease;
+        }
+        .container:hover {
+            transform: translateY(-8px); /* More pronounced lift on hover */
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8); /* Stronger shadow on hover */
+        }
+
+        h1 {
+            color: #e0f2f7;
+            margin-bottom: 35px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.2); /* Enhanced glow effect */
+            font-size: 2.5em; /* Larger, more impactful heading */
+        }
+
+        .link-button {
+            display: block;
+            width: 100%; /* Fill available width */
+            padding: 20px 25px; /* Generous padding */
+            margin-bottom: 22px; /* Consistent spacing between buttons */
+            background-color: rgba(255, 255, 255, 0.1); /* Very subtle, blends well */
+            color: #e0f2f7;
+            text-decoration: none;
+            border-radius: 12px; /* Softly rounded buttons */
+            font-size: 21px; /* Clear and readable font size */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Delicate border */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Soft shadow */
+        }
+
+        .link-button:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Slightly brighter on hover */
+            transform: translateY(-6px); /* Gentle lift */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); /* Enhanced shadow */
+        }
+
+        /* --- Media Queries for Mobile Responsiveness (تصغير الحجم وتغيير الخلفية) --- */
+        @media (max-width: 767px) { /* Styles for screens smaller than 768px (typical phone portrait) */
+            .container {
+                padding: 25px; /* Smaller padding for mobile */
+                border-radius: 15px; /* Slightly less rounded */
+                max-width: 95%; /* Take up more width on smaller screens */
+            }
+
+            h1 {
+                font-size: 1.8em; /* Smaller heading for mobile */
+                margin-bottom: 25px;
+            }
+
+            .link-button {
+                padding: 15px 20px; /* Smaller padding for buttons on mobile */
+                font-size: 18px; /* Smaller font size for buttons on mobile */
+                margin-bottom: 15px;
+            }
+
+            /* Hide YouTube video background and its overlay on mobile for performance */
+            .video-background, .video-overlay {
+                display: none !important;
+            }
+            
+            /* Ensure CSS snowfall is active and visible on mobile */
+            body::before, body::after {
+                display: block; /* Ensure pseudo-elements are displayed */
+            }
+        }
+
+        /* Optional: Even smaller adjustments for very small phones */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.6em;
+            }
+            .link-button {
+                padding: 12px 18px;
+                font-size: 16px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Video Background (for Desktop/Tablet) -->
+    <div class="video-background" id="video-bg">
+        <iframe 
+            id="youtube-video"
+            src="https://www.youtube.com/embed/TosPBQy4zVo?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=TosPBQy4zVo&controls=0&showinfo=0&autohide=1&disablekb=1&modestbranding=1" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    <!-- Optional: Overlay to improve text readability over the video (for Desktop/Tablet) -->
+    <div class="video-overlay"></div>
+
+    <div class="container">
+        <h1>My Online Links</h1>
+        <a href="https://www.instagram.com/3mir_taher?igsh=MThkbTloNmNxOXl5YQ==" target="_blank" class="link-button">Instagram</a>
+        <a href="https://www.linkedin.com/in/amir-taher-71a785285?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="link-button">LinkedIn</a>
+        <a href="https://www.facebook.com/share/1ajUAXAPTc/" target="_blank" class="link-button">Facebook</a>
+        <a href="https://wa.me/201201306339" target="_blank" class="link-button">WhatsApp</a>
+        <a href="https://twet.link/3mirtaher" target="_blank" class="link-button">Twet.link</a>
+        <a href="https://x.com/3mir_Taher?t=lOGuD7qfmv971vL90FAX0Q&s=09" target="_blank" class="link-button">Twitter (X)</a>
+        <!-- Add more links here -->
+    </div>
+
+    <script>
+        // Only load and manage YouTube video if screen is large enough
+        if (window.matchMedia("(min-width: 768px)").matches) {
+            var player;
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player('youtube-video', {
+                    events: {
+                        'onReady': onPlayerReady
+                    }
+                });
+            }
+
+            function onPlayerReady(event) {
+                var videoBackground = document.getElementById('video-bg');
+                videoBackground.style.opacity = 1; // Fade in the video background
+            }
+
+            // Load the YouTube IFrame Player API asynchronously.
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+    </script>
+</body>
+</html>
